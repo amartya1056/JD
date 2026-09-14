@@ -22,17 +22,21 @@ class EvalResult:
     roc_auc: float
     confusion: list[list[int]]
     threshold: float
+    accuracy: float = 0.0
+    balanced_accuracy: float = 0.0
 
     def as_row(self) -> str:
         return (
-            f"{self.name:<28} P={self.precision:.3f} R={self.recall:.3f} "
-            f"F1={self.f1:.3f} PR-AUC={self.pr_auc:.3f} ROC-AUC={self.roc_auc:.3f}"
+            f"{self.name:<28} Acc={self.accuracy:.3f} P={self.precision:.3f} "
+            f"R={self.recall:.3f} F1={self.f1:.3f} PR-AUC={self.pr_auc:.3f} "
+            f"ROC-AUC={self.roc_auc:.3f}"
         )
 
 
 def evaluate(name: str, y_true, y_prob, threshold: float = 0.5) -> EvalResult:
     """Compute metrics for the FRAUD (positive) class at a decision threshold."""
-    from sklearn.metrics import (average_precision_score, confusion_matrix,
+    from sklearn.metrics import (accuracy_score, average_precision_score,
+                                 balanced_accuracy_score, confusion_matrix,
                                  precision_recall_fscore_support, roc_auc_score)
 
     y_true = np.asarray(y_true, dtype=int)
@@ -44,9 +48,11 @@ def evaluate(name: str, y_true, y_prob, threshold: float = 0.5) -> EvalResult:
     )
     pr_auc = average_precision_score(y_true, y_prob) if len(set(y_true)) > 1 else 0.0
     roc_auc = roc_auc_score(y_true, y_prob) if len(set(y_true)) > 1 else 0.0
+    acc = accuracy_score(y_true, y_pred)
+    bal_acc = balanced_accuracy_score(y_true, y_pred)
     cm = confusion_matrix(y_true, y_pred, labels=[0, 1]).tolist()
     return EvalResult(name, float(p), float(r), float(f1), float(pr_auc),
-                      float(roc_auc), cm, threshold)
+                      float(roc_auc), cm, threshold, float(acc), float(bal_acc))
 
 
 def classification_report_text(y_true, y_prob, threshold: float = 0.5) -> str:
