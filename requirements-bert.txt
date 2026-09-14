@@ -1,0 +1,13 @@
+# Optional heavy stack for the fine-tuned DistilBERT text branch.
+# Install with:  pip install -r requirements-bert.txt
+# Then train with: python scripts/train.py --use-bert
+#
+# Trade-off: ~1-2 GB of dependencies and much slower training/inference in
+# exchange for typically higher recall on subtle scams. The default TF-IDF text
+# branch needs none of this.
+
+torch>=2.2
+transformers>=4.40
+sentence-transformers>=2.7
+# spaCy is optional; used only if you swap in spaCy-based lemmatization.
+spacy>=3.7

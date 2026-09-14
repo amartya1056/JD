@@ -1,0 +1,53 @@
+# Full stack: Postgres + FastAPI backend + nginx-served React frontend.
+# Usage:
+#   docker compose up --build
+#   Frontend -> http://localhost:8080   API -> http://localhost:8000
+#
+# Prereq: a trained model must exist at ./models/ensemble_latest.joblib
+#         (run `python scripts/train.py` once before building, or exec into the
+#          backend container and run it there).
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: jobguard
+      POSTGRES_PASSWORD: jobguard
+      POSTGRES_DB: jobguard
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      JOBGUARD_DATABASE_URL: postgresql+psycopg://jobguard:jobguard@db:5432/jobguard
+      JOBGUARD_CORS_ORIGINS: http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    # Mount models so you can retrain on the host and restart without rebuilding.
+    volumes:
+      - ./models:/app/models
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:

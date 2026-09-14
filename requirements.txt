@@ -1,0 +1,35 @@
+# --- Core ML / data ---
+numpy>=1.26,<3
+pandas>=2.2
+scikit-learn>=1.4
+xgboost>=2.0
+imbalanced-learn>=0.12          # SMOTE
+scipy>=1.11
+joblib>=1.3
+nltk>=3.8                        # optional lemmatization (see jobguard.preprocessing)
+
+# --- Explainability ---
+shap>=0.44                       # SHAP tabular explanations (falls back if absent)
+
+# --- Web / API ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+sqlalchemy>=2.0
+slowapi>=0.1.9                   # rate limiting
+
+# --- Scraping ---
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+python-whois>=0.9               # optional domain-age lookup (free, best-effort)
+
+# --- Database driver: psycopg powers the docker-compose Postgres; SQLite (the
+#     default JOBGUARD_DATABASE_URL) needs no driver and works out of the box. ---
+psycopg[binary]>=3.1
+
+# --- Optional JS-rendered scraping (install browser separately: playwright install) ---
+# playwright>=1.44
+
+# NOTE: The fine-tuned DistilBERT branch requires the heavy stack in
+# requirements-bert.txt. It is optional; the project runs fully without it.

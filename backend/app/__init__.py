@@ -1,0 +1,1 @@
+"""JobGuard FastAPI backend package."""

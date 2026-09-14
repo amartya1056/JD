@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  JobGuard design system — "premium trust report".
+  Palette: deep navy ink + refined gold accent on warm paper.
+  Type: Fraunces (authoritative serif display) + Manrope (clean UI sans).
+*/
+:root {
+  color-scheme: light;
+
+  --paper: #f4f1ea;          /* warm paper background            */
+  --paper-2: #fbfaf6;        /* raised surfaces                  */
+  --card: #ffffff;
+  --ink: #0e1c2b;            /* deep navy — primary text/brand   */
+  --ink-soft: #33465a;
+  --muted: #6c7b89;
+  --line: #e6e0d4;           /* warm hairline                    */
+  --line-cool: #e4e9ef;
+  --gold: #b0843f;           /* refined accent                   */
+  --gold-soft: #cba55f;
+  --gold-wash: #f6efe0;
+
+  /* Verdict semantics */
+  --real: #1f7a54;
+  --real-wash: #e8f3ec;
+  --amber: #a9761b;
+  --amber-wash: #f7efdd;
+  --fake: #b12f2c;
+  --fake-wash: #f7e7e4;
+
+  --shadow-sm: 0 1px 2px rgba(14, 28, 43, 0.06);
+  --shadow-md: 0 10px 30px -12px rgba(14, 28, 43, 0.25);
+  --shadow-lg: 0 30px 60px -20px rgba(14, 28, 43, 0.35);
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink);
+  background-color: var(--paper);
+  /* Layered atmosphere: soft radial washes + a faint grain, no flat fill. */
+  background-image:
+    radial-gradient(60rem 60rem at 85% -10%, rgba(176, 132, 63, 0.10), transparent 60%),
+    radial-gradient(50rem 50rem at -10% 10%, rgba(14, 28, 43, 0.06), transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Fine grain overlay for tactile, printed-report feel. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Type helpers — bold grotesque display for a strong, confident tone */
+.font-display {
+  font-family: "Archivo", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* Refined focus ring */
+:where(button, a, input, textarea):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Entrance animations */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scanline {
+  0%   { transform: translateY(-120%); opacity: 0; }
+  40%  { opacity: 1; }
+  100% { transform: translateY(120%); opacity: 0; }
+}
+@keyframes sweep {
+  to { transform: translateX(200%); }
+}
+@keyframes ringpulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 0.7;  transform: scale(1.04); }
+}
+
+.animate-rise { animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade { animation: fade 0.5s ease both; }
+
+/* Shimmer skeleton */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--line);
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: sweep 1.4s infinite;
+}
+
+/* Custom scrollbar for embedded text panels */
+.scroll-fine::-webkit-scrollbar { width: 8px; }
+.scroll-fine::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+.scroll-fine::-webkit-scrollbar-thumb:hover { background: var(--gold-soft); }

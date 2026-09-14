@@ -1,0 +1,32 @@
+Senior Software Engineer — Backend Platform
+
+Company: Northwind Traders
+Location: US, TX, Austin (Hybrid)
+Salary: $130,000 - $165,000 per year
+Employment type: Full-time
+Required experience: Mid-Senior level
+Required education: Bachelor's Degree
+
+About us:
+Northwind Traders is an established logistics technology company serving clients
+across North America. We value engineering excellence, thoughtful code review,
+and a healthy work-life balance.
+
+The role:
+You will design, build, and maintain scalable backend services that power our
+supply-chain platform. You'll collaborate with product and data teams, own the
+delivery of key projects, and mentor junior engineers.
+
+Requirements:
+- Bachelor's degree in Computer Science or equivalent experience
+- 5+ years building production backend systems (Python, Go, or Java)
+- Experience with distributed systems, databases, and cloud infrastructure
+- Strong communication skills
+
+Benefits:
+Health, dental, and vision insurance. 401(k) matching. Paid parental leave and a
+generous professional development budget.
+
+To apply, submit your resume and a short cover letter through our careers portal
+at https://careers.northwindtraders.example.com. Questions? Contact
+careers@northwindtraders.example.com
