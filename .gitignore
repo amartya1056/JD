@@ -9,6 +9,9 @@ venv/
 # Data & models (large; regenerate via scripts)
 data/*.csv
 models/*.joblib
+# ...but DO ship the promoted production model (~3 MB) so the backend deploys
+# without needing the 50 MB dataset or a training step at build time.
+!models/ensemble_latest.joblib
 models/*_textbranch/
 *.db
 

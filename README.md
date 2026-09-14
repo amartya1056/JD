@@ -247,8 +247,40 @@ require the real dataset.
 Trained on the full EMSCAD dataset (80/20 stratified split, positive class =
 FAKE). Metrics below are on the held-out 20% test set.
 
-<!-- METRICS_TABLE -->
-_(populated by `scripts/train.py` — see the training log / `models/registry.jsonl`)_
+**Dataset:** EMSCAD, 17,880 postings · **Test set:** 3,576 held-out postings (173
+fraudulent). Positive class = FAKE.
+
+| Model | Accuracy | Precision | Recall | F1 | PR-AUC | ROC-AUC |
+|-------|:--------:|:---------:|:------:|:--:|:------:|:-------:|
+| Baseline (TF-IDF + LogReg) | 0.985 | 0.803 | 0.919 | 0.857 | 0.937 | 0.991 |
+| XGBoost (tabular only) | 0.948 | 0.478 | 0.740 | 0.580 | 0.687 | 0.951 |
+| Text branch (TF-IDF word+char) | 0.990 | 0.901 | 0.890 | 0.895 | 0.948 | 0.991 |
+| **Ensemble (stacked) — production** | **0.969** | 0.617 | **0.960** | 0.751 | **0.955** | **0.994** |
+
+Precision/Recall/F1 are for the **FAKE** class at the default 0.50 threshold.
+
+**The production ensemble catches 96% of scams** (recall 0.960 — 166 of 173) with
+the best PR-AUC (0.955) and ROC-AUC (0.994) of any model. Its **balanced accuracy**
+(mean per-class recall) is **0.965**. This is the intended trade-off: the ensemble
+maximizes fraud recall — missing a scam is worse than a false alarm — at some cost
+to precision (0.617). If you prefer fewer false alarms over maximum recall, the
+**text branch alone** is a strong alternative (accuracy 0.990, precision 0.901,
+F1 0.895); tune the operating point with `JOBGUARD_REAL_THRESHOLD` /
+`JOBGUARD_FAKE_THRESHOLD`, or by the recall-optimized threshold `train.py` reports.
+
+**Confusion matrix (ensemble @ 0.50):**
+
+```
+                 Predicted REAL   Predicted FAKE
+Actual REAL           3300             103          (3403 genuine)
+Actual FAKE              7             166          ( 173 fraud, 96% caught)
+```
+
+> **Accuracy in context.** The 0.969 accuracy looks high partly because ~95% of
+> postings are genuine — a "predict REAL always" baseline already scores ~0.952.
+> The honest fraud-catching metrics are **recall (0.960)** and **PR-AUC (0.955)**,
+> plus **balanced accuracy (0.965)**, none of which are inflated by the majority
+> class.
 
 > **Read accuracy in context.** Because only ~5% of postings are fraudulent, a
 > trivial "always REAL" classifier already scores ~95% accuracy. The numbers that
@@ -418,6 +450,16 @@ docker compose up --build
 build**. The backend reads `JOBGUARD_DATABASE_URL` (Postgres in compose, SQLite
 locally). The `models/` directory is mounted so you can retrain on the host and
 restart without rebuilding.
+
+### Cloud deployment (Vercel + Render)
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for step-by-step cloud hosting: the **React
+frontend on Vercel** (with the exact build settings) and the **Python ML backend
+on Render / Railway / Fly** via Docker. In short — the frontend is a static Vite
+build (Vercel's sweet spot), while the ML backend's heavy dependencies
+(XGBoost + scikit-learn + SHAP, ~250 MB) need a container host, not Vercel
+serverless. A `render.yaml` blueprint and a committed 3 MB production model make
+the backend deploy in one click.
 
 ---
 

@@ -1,0 +1,28 @@
+# One-click backend deploy on Render (https://render.com) via Docker.
+# The React frontend deploys separately on Vercel (see DEPLOYMENT.md).
+#
+# Usage: push this repo to GitHub, then in Render choose
+# "New +" → "Blueprint" and point it at the repo. Render builds
+# backend/Dockerfile (heavy ML deps are fine here — unlike Vercel serverless).
+services:
+  - type: web
+    name: jobguard-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: free                       # upgrade for always-on / more memory
+    healthCheckPath: /health
+    envVars:
+      # Allow your Vercel frontend origin (replace after the frontend is live).
+      - key: JOBGUARD_CORS_ORIGINS
+        value: https://your-frontend.vercel.app
+      # SQLite works but is EPHEMERAL on Render's free tier (feedback resets on
+      # redeploy). For durable feedback, provision a Render Postgres and set this
+      # to its Internal Database URL as postgresql+psycopg://...
+      - key: JOBGUARD_DATABASE_URL
+        value: sqlite:///./jobguard.db
+      # Set your Groq key in the Render dashboard (do NOT commit it).
+      - key: JOBGUARD_GROQ_API_KEY
+        sync: false
+      - key: JOBGUARD_GROQ_MODEL
+        value: openai/gpt-oss-20b

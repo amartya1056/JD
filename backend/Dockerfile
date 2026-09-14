@@ -24,4 +24,6 @@ USER appuser
 EXPOSE 8000
 
 # The model is loaded once at startup (see backend/app/main.py lifespan).
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Shell form so hosts that inject $PORT (Render, Railway, Fly, Cloud Run) are
+# respected; falls back to 8000 for local docker-compose.
+CMD uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}
